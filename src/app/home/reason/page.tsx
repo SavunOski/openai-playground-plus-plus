@@ -25,16 +25,9 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 const models = [
-  { name: 'gpt-4.5-preview' },
-  { name: 'gpt-4o' },
-  { name: 'gpt-4o-mini' },
-  { name: 'gpt-4' },
-  { name: 'gpt-4-0314' },
-  { name: 'gpt-4-1106-preview' },
-  { name: 'gpt-4-turbo' },
-  { name: 'gpt-4-turbo-preview' },
-  { name: 'gpt-3.5-turbo' },
-  { name: 'gpt-3.5-turbo-1106' },
+  { name: 'o1' },
+  { name: 'o1-mini' },
+  { name: 'o3-mini' },
 ];
 
 const TextGeneration = () => {
@@ -45,11 +38,9 @@ const TextGeneration = () => {
   const [options, setOptions] = useState<{
     model: string;
     temperature: number;
-    maxtokens: number;
   }>({
     model: models[0].name,
     temperature: 1,
-    maxtokens: 4096,
   });
   const [errorMessage, setErrorMessage] = useState<string>('');
 
@@ -73,7 +64,6 @@ const TextGeneration = () => {
           ...newMessages,
         ],
         temperature: options.temperature,
-        max_tokens: 4096,
       })
       .then((completionResponse) => {
         setMessages((prevMessages) => {
@@ -202,20 +192,6 @@ const TextGeneration = () => {
             step={0.01}
             onValueChange={(value) =>
               setOptions({ ...options, temperature: value[0] })
-            }
-          />
-        </div>
-        <div className="flex flex-col gap-3">
-          <Label>Max Tokens</Label>
-          <Input
-            name="maxtokens"
-            type="number"
-            min={0}
-            max={4096}
-            placeholder="Max Tokens"
-            value={options.maxtokens}
-            onChange={(e) =>
-              setOptions({ ...options, maxtokens: Number(e.target.value) })
             }
           />
         </div>
