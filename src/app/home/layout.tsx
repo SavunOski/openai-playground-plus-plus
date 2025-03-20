@@ -25,6 +25,10 @@ const menus: Menu[] = [
     path: '/home/reason',
   },
   {
+    name: 'Responses',
+    path: '/home/responses',
+  },
+  {
     name: 'Vision',
     path: '/home/vision',
   },

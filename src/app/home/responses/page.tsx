@@ -19,17 +19,13 @@ import { DEFAULT_SYSTEM_INSTRUCTIONS } from '@/lib/constants';
 import openai from '@/lib/openai';
 import { cn } from '@/lib/utils';
 import { ArrowUpRight, MessageSquare, Send, XCircle } from 'lucide-react';
+//import { Messages } from 'openai/resources/beta/threads/messages/messages.mjs';
 import { ChatCompletionMessageParam } from 'openai/resources/index.mjs';
 import { useEffect, useRef, useState } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-
-const models = [
-  { name: 'o1' },
-  { name: 'o1-mini' },
-  { name: 'o1-pro' },
-  { name: 'o3-mini' },
-];
+const url = 'https://api.openai.com/v1/responses';
+const models = [{ name: 'o1-pro' }];
 
 const TextGeneration = () => {
   const [systemInstructions, setSystemInstructions] = useState<string>('');
@@ -45,6 +41,34 @@ const TextGeneration = () => {
   });
   const [errorMessage, setErrorMessage] = useState<string>('');
 
+  async function getResponse(
+    messages: Array<ChatCompletionMessageParam>
+  ): Promise<any> {
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + openai.apiKey,
+        },
+        body: JSON.stringify({
+          input: messages,
+          model: options.model,
+          temperature: options.temperature,
+        }),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // return json
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   const handleSend = () => {
     setPendingCompletion(true);
     const newMessages = [...messages];
@@ -54,35 +78,21 @@ const TextGeneration = () => {
     });
     setMessages(newMessages);
     setInputMessage('');
-    if (options.model == 'o1-pro') {
-      setErrorMessage(
-        'Use the Responses tab! This model does not support this old API.'
-      );
-    }
-    openai.chat.completions
-      .create({
-        model: options.model,
-        messages: [
-          {
-            role: options.model !== 'o1-mini' ? 'system' : 'user',
-            content: systemInstructions ?? DEFAULT_SYSTEM_INSTRUCTIONS,
-          },
-          ...newMessages,
-        ],
-        temperature: options.temperature,
-      })
+
+    getResponse(newMessages)
       .then((completionResponse) => {
         setMessages((prevMessages) => {
           return [
             ...prevMessages,
-            { ...completionResponse.choices[0].message },
+            {
+              role: 'assistant',
+              content: completionResponse.output[1].content[0].text,
+            },
           ];
         });
       })
       .catch((err) => {
-        if (options.model !== 'o1-pro') {
-          setErrorMessage(err.message);
-        }
+        setErrorMessage(err.message);
       })
       .finally(() => {
         setPendingCompletion(false);
