@@ -26,6 +26,7 @@ import remarkGfm from 'remark-gfm';
 
 const models = [
   { name: 'o1' },
+  { name: 'o1-pro' },
   { name: 'o1-mini' },
   { name: 'o3-mini' },
 ];
