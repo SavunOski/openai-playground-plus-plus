@@ -26,7 +26,6 @@ import remarkGfm from 'remark-gfm';
 
 const models = [
   { name: 'o1' },
-  { name: 'o1-pro' },
   { name: 'o1-mini' },
   { name: 'o3-mini' },
 ];
@@ -59,7 +58,7 @@ const TextGeneration = () => {
         model: options.model,
         messages: [
           {
-            role: 'system',
+            role: options.model !== 'o1-mini' ? 'system' : 'user',
             content: systemInstructions ?? DEFAULT_SYSTEM_INSTRUCTIONS,
           },
           ...newMessages,
