@@ -10,7 +10,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://openai-playground-plus.vercel.app'),
+  metadataBase: new URL('https://chat.brn.lol'),
   title: APP_TITLE,
   description: APP_DESCRIPTION,
   keywords: [

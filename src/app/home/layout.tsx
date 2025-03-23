@@ -1,13 +1,22 @@
 'use client';
 
-import { usePathname, useRouter } from 'next/navigation';
+import { redirect, usePathname, useRouter } from 'next/navigation';
 import { HTMLAttributeAnchorTarget, PropsWithChildren, useEffect } from 'react';
 import { OpenAISVG, GithubSVG } from '@/components/svgs';
-import { Button, Link, Text } from '@/components/ui';
 import { OPENAI_API_KEY } from '@/lib/constants';
 import openai from '@/lib/openai';
 import { ArrowUpRight } from 'lucide-react';
 import { ModeToggle } from '@/components/mode-toggle';
+import {
+  Button,
+  Link,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Text,
+} from '@/components/ui';
 
 type Menu = { name: string; path: string; target?: HTMLAttributeAnchorTarget };
 
@@ -62,21 +71,49 @@ const Navbar = () => {
     <div className="flex items-center justify-between px-4 py-3 border-b gap-8">
       <Link variant="ghost" href="/">
         <OpenAISVG width="24" height="24" className="mr-2" />
-        <Text variant="heading">Playground Plus</Text>
+        <Text variant="heading">Playground Plus Plus</Text>
       </Link>
       <div className="flex gap-4 overflow-auto">
-        {menus.map((menu, index) => (
-          <Button
-            key={index}
-            asChild
-            size="small"
-            variant={menu === activeMenu ? 'secondary' : 'ghost'}
-          >
-            <Link href={menu.path} target={menu.target} variant="ghost">
-              {menu.name}
-            </Link>
-          </Button>
-        ))}
+        <div className="hidden lg:flex gap-4 overflow-auto">
+          {menus.map((menu, index) => (
+            <Button
+              key={index}
+              asChild
+              size="small"
+              variant={menu === activeMenu ? 'secondary' : 'ghost'}
+            >
+              <Link href={menu.path} target={menu.target} variant="ghost">
+                {menu.name}
+              </Link>
+            </Button>
+          ))}
+        </div>
+        <div className="lg:hidden flex gap-4 overflow-auto">
+          <div id="selectBar" className="flex flex-col gap-3">
+            <Select
+              name="page"
+              // value={menu.name}
+              onValueChange={(value) => {
+                const selectedMenu = menus.find((menu) => menu.name === value);
+                if (selectedMenu) {
+                  redirect(selectedMenu.path);
+                }
+              }}
+            >
+              {' '}
+              <SelectTrigger>
+                <SelectValue placeholder="menu.name" />
+              </SelectTrigger>
+              <SelectContent>
+                {menus.map((model, index) => (
+                  <SelectItem key={index} value={model.name}>
+                    {model.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
         <Link
           href="https://platform.openai.com/docs/api-reference"
           target="_blank"
