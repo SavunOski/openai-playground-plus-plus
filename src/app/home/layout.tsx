@@ -114,12 +114,6 @@ const Navbar = () => {
             </Select>
           </div>
         </div>
-        <Link
-          href="https://platform.openai.com/docs/api-reference"
-          target="_blank"
-        >
-          API Reference <ArrowUpRight size={16} />
-        </Link>
         <ModeToggle />
         <Link
           href="https://github.com/hkurma/openai-playground-plus"
