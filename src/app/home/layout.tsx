@@ -71,7 +71,7 @@ const Navbar = () => {
     <div className="flex items-center justify-between px-4 py-3 border-b gap-8">
       <Link variant="ghost" href="/">
         <OpenAISVG width="24" height="24" className="mr-2" />
-        <Text variant="heading">Playground Plus Plus</Text>
+        <Text variant="heading">Playground++</Text>
       </Link>
       <div className="flex gap-4 overflow-auto">
         <div className="hidden lg:flex gap-4 overflow-auto">
