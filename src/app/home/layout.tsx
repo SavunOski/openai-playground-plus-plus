@@ -5,7 +5,6 @@ import { HTMLAttributeAnchorTarget, PropsWithChildren, useEffect } from 'react';
 import { OpenAISVG, GithubSVG } from '@/components/svgs';
 import { OPENAI_API_KEY } from '@/lib/constants';
 import openai from '@/lib/openai';
-import { ArrowUpRight } from 'lucide-react';
 import { ModeToggle } from '@/components/mode-toggle';
 import {
   Button,
