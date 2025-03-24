@@ -1,6 +1,6 @@
 'use client';
 
-import { redirect, usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { HTMLAttributeAnchorTarget, PropsWithChildren, useEffect } from 'react';
 import { OpenAISVG, GithubSVG } from '@/components/svgs';
 import { OPENAI_API_KEY } from '@/lib/constants';
@@ -18,7 +18,6 @@ import {
 } from '@/components/ui';
 
 type Menu = { name: string; path: string; target?: HTMLAttributeAnchorTarget };
-
 const menus: Menu[] = [
   {
     name: 'Completion',
@@ -64,13 +63,13 @@ const menus: Menu[] = [
 
 const Navbar = () => {
   const pathname = usePathname();
+  const router = useRouter();
   const activeMenu: Menu = menus.find((menu) => menu.path === pathname)!;
-
   return (
     <div className="flex items-center justify-between px-4 py-3 border-b gap-8">
       <Link variant="ghost" href="/">
-        <OpenAISVG width="24" height="24" className="mr-2" />
-        <Text variant="heading">Playground++</Text>
+        <OpenAISVG width="18" height="18" className="mr-2" />
+        <Text variant="large">Playground++</Text>
       </Link>
       <div className="flex gap-4 overflow-auto">
         <div className="hidden lg:flex gap-4 overflow-auto">
@@ -91,11 +90,11 @@ const Navbar = () => {
           <div id="selectBar" className="flex flex-col gap-3">
             <Select
               name="page"
-              // value={menu.name}
+              value={activeMenu.name}
               onValueChange={(value) => {
                 const selectedMenu = menus.find((menu) => menu.name === value);
                 if (selectedMenu) {
-                  redirect(selectedMenu.path);
+                  router.push(selectedMenu.path);
                 }
               }}
             >
