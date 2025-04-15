@@ -26,6 +26,9 @@ import remarkGfm from 'remark-gfm';
 
 const models = [
   { name: 'gpt-4.5-preview' },
+  { name: 'gpt-4.1' },
+  { name: 'gpt-4.1-mini' },
+  { name: 'gpt-4.1-nano' },
   { name: 'gpt-4o' },
   { name: 'gpt-4o-mini' },
   { name: 'gpt-4' },
