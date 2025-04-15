@@ -25,7 +25,12 @@ import { useEffect, useRef, useState } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 const url = 'https://api.openai.com/v1/responses';
-const models = [{ name: 'o1-pro' }];
+const models =
+  [{ name: 'o1-pro' },
+  { name: 'o3-mini' },
+  { name: 'gpt-4.1' },
+  { name: 'gpt-4.1-mini' },
+  { name: 'gpt-4.1-nano' }];
 
 const TextGeneration = () => {
   const [systemInstructions, setSystemInstructions] = useState<string>('');
