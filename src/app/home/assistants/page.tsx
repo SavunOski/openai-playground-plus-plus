@@ -33,6 +33,7 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 const models = [
+  { name: 'gpt-4.1' },
   { name: 'gpt-4o' },
   { name: 'gpt-4-turbo' },
   { name: 'gpt-3.5-turbo' },

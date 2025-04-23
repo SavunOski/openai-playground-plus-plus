@@ -24,15 +24,11 @@ const menus: Menu[] = [
     path: '/home/completion',
   },
   {
-    name: 'Text',
+    name: 'Legacy',
     path: '/home/text',
   },
   {
-    name: 'Reasoning',
-    path: '/home/reason',
-  },
-  {
-    name: 'Responses',
+    name: 'Chat',
     path: '/home/responses',
   },
   {
@@ -44,7 +40,7 @@ const menus: Menu[] = [
     path: '/home/images',
   },
   {
-    name: 'Whisper',
+    name: 'Transcribe',
     path: '/home/whisper',
   },
   {

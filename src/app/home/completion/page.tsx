@@ -95,6 +95,45 @@ const Completions = () => {
   return (
     <div className="h-full w-full flex overflow-hidden px-4 py-6 gap-4">
       <div className="flex-1 flex flex-col gap-4">
+                  {/*for mobile */}
+                  <div className="lg:hidden flex flex-col gap-4 mb-4">
+                    <div className="flex flex-col gap-3">
+                      <Label>Model</Label>
+                      <Select
+                        name="model"
+                        value={options.model}
+                        onValueChange={(value) =>
+                          setOptions({ ...options, model: value })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a model" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {models.map((model, index) => (
+                            <SelectItem key={index} value={model.name}>
+                              {model.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <div className="flex justify-between">
+                        <Label>Temperature: {options.temperature}</Label>
+                      </div>
+                      <Slider
+                        name="temperature"
+                        value={[options.temperature]}
+                        max={2}
+                        step={0.01}
+                        onValueChange={(value) =>
+                          setOptions({ ...options, temperature: value[0] })
+                        }
+                      />
+                    </div>
+                  </div>
+        
         <div className="relative flex-1 flex flex-col gap-4">
           <Textarea
             name="text"

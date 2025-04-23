@@ -20,6 +20,7 @@ import { Moderation } from 'openai/resources/moderations.mjs';
 import { useState } from 'react';
 
 const models = [
+  { name: 'omni-moderation-latest' },
   { name: 'text-moderation-latest' },
   { name: 'text-moderation-stable' },
 ];

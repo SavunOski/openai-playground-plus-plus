@@ -26,13 +26,18 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 const url = 'https://api.openai.com/v1/responses';
 const models =
-  [{ name: 'o4-mini' },
+  [
+  { name: 'o4-mini' },
   { name: 'o3' },
   { name: 'o3-mini' },
   { name: 'o1-pro' },
+  { name: 'o1' },
+  { name: 'o1-mini' },
+  { name: 'chatgpt-4o-latest' },
   { name: 'gpt-4.1' },
   { name: 'gpt-4.1-mini' },
-  { name: 'gpt-4.1-nano' }];
+  { name: 'gpt-4.1-nano' },
+  { name: 'computer-use-preview' }];
 
 const TextGeneration = () => {
   const [systemInstructions, setSystemInstructions] = useState<string>('');
@@ -62,6 +67,7 @@ const TextGeneration = () => {
           input: messages,
           model: options.model,
           temperature: options.temperature,
+          truncation: options.model === 'computer-use-preview' ? "auto" : "disabled",
         }),
       });
       if (!response.ok) {
@@ -77,6 +83,12 @@ const TextGeneration = () => {
   }
 
   const handleSend = () => {
+    if (inputMessage.startsWith("/setmodel") || inputMessage.startsWith("/m")){
+      const model = inputMessage.split(" ")[1];      
+        setOptions({ ...options, model: model });
+        setInputMessage('');
+        return;     
+    };
     setPendingCompletion(true);
     const newMessages = [...messages];
     newMessages.push({
@@ -93,7 +105,7 @@ const TextGeneration = () => {
             ...prevMessages,
             {
               role: 'assistant',
-              content: completionResponse.output[1].content[0].text,
+              content: completionResponse.output?.find((item: { type: string; }) => item.type === "message")?.content?.[0]?.text ?? '',
             },
           ];
         });
@@ -214,7 +226,7 @@ const TextGeneration = () => {
           <Input
             name="inputMessage"
             className="flex-1"
-            placeholder="Enter your message"
+            placeholder="Enter your message or /setmodel <model> to set a model, even if not listed"
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyUp={handleInputMessageKeyUp}

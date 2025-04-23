@@ -30,6 +30,7 @@ const models = [
   { name: 'gpt-4.1-mini' },
   { name: 'gpt-4.1-nano' },
   { name: 'gpt-4o' },
+  { name: 'gpt-4o-search-preview' },
   { name: 'gpt-4o-mini' },
   { name: 'gpt-4' },
   { name: 'gpt-4-0314' },
@@ -57,6 +58,12 @@ const TextGeneration = () => {
   const [errorMessage, setErrorMessage] = useState<string>('');
 
   const handleSend = () => {
+    if (inputMessage.startsWith("/setmodel") || inputMessage.startsWith("/m")) {
+      const model = inputMessage.split(" ")[1];
+      setOptions({ ...options, model: model });
+      setInputMessage('');
+      return;
+    };
     setPendingCompletion(true);
     const newMessages = [...messages];
     newMessages.push({
@@ -75,8 +82,8 @@ const TextGeneration = () => {
           },
           ...newMessages,
         ],
-        temperature: options.temperature,
-        max_tokens: 4096,
+        ...(options.model !== "gpt-4o-search-preview" ? { temperature: options.temperature } : {}),
+        max_tokens: options.maxtokens,
       })
       .then((completionResponse) => {
         setMessages((prevMessages) => {
@@ -202,7 +209,7 @@ const TextGeneration = () => {
           <Input
             name="inputMessage"
             className="flex-1"
-            placeholder="Enter your message"
+            placeholder="Enter your message or /setmodel <model> to set a model, even if not listed"
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyUp={handleInputMessageKeyUp}

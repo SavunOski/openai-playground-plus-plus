@@ -17,10 +17,10 @@ import openai from '@/lib/openai';
 import { LoadingSVG } from '@/components/svgs/LoadingSVG';
 import { ArrowUpRight, XCircle, UploadCloud } from 'lucide-react';
 
-const models = [{ name: 'whisper-1' }, { name: 'whisper-2' }];
+const models = [{ name: 'whisper-1' }, { name: 'whisper-2' }, { name: 'gpt-4o-mini-transcribe' }, { name: 'gpt-4o-transcribe' }];
 
 const WhisperTranscription = () => {
-  const [selectedModel] = useState<string>(models[0].name);
+  const [selectedModel, setModel] = useState<string>(models[0].name);
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [transcription, setTranscription] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -87,6 +87,26 @@ const WhisperTranscription = () => {
             <SelectItem value="text">Text</SelectItem>
             <SelectItem value="verbose_json">Verbose JSON</SelectItem>
           </SelectContent>
+        </Select>
+      </div>
+
+      <div className="flex flex-col gap-4">
+        <Label>Model</Label>
+        <Select
+          name="model"
+          value={selectedModel}
+          onValueChange={setModel}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select a response format" />
+          </SelectTrigger>
+          <SelectContent>
+                  {models.map((model, index) => (
+                    <SelectItem key={index} value={model.name}>
+                      {model.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
         </Select>
       </div>
 
