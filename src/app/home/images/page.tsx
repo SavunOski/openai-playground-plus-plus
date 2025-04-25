@@ -19,7 +19,7 @@ import Image from 'next/image';
 import { Image as ImageResponse } from 'openai/resources/images.mjs';
 import { useState } from 'react';
 
-const models = [{ name: 'dall-e-3' }, { name: 'dall-e-2' }];
+const models = [{ name: 'gpt-image-1' }, { name: 'dall-e-3' }, { name: 'dall-e-2' }];
 
 const styles = [{ name: 'vivid' }, { name: 'natural' }];
 
@@ -31,7 +31,7 @@ const Images = () => {
     count: number;
     style: string;
   }>({
-    model: 'dall-e-2',
+    model: 'gpt-image-1',
     count: 1,
     style: 'vivid',
   });
@@ -39,6 +39,12 @@ const Images = () => {
   const [errorMessage, setErrorMessage] = useState<string>('');
 
   const handleSend = async () => {
+    if (prompt.startsWith("/setmodel") || prompt.startsWith("/m")) {
+      const model = prompt.split(" ")[1];
+      setOptions({ ...options, model: model });
+      setprompt('');
+      return;
+    };
     setErrorMessage('');
     setImages([]);
     setPendingGeneration(true);
@@ -59,7 +65,7 @@ const Images = () => {
       });
   };
 
-  const handleInputMessageKeyUp = (
+  const handlepromptKeyUp = (
     event: React.KeyboardEvent<HTMLInputElement>
   ) => {
     if (event.key === 'Enter') {
@@ -106,7 +112,7 @@ const Images = () => {
             placeholder="Enter your prompt"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            onKeyUp={handleInputMessageKeyUp}
+            onKeyUp={handlepromptKeyUp}
           />
           <Button onClick={handleSend}>
             <Send size={18} />
@@ -155,7 +161,7 @@ const Images = () => {
             onValueChange={(value) => setOptions({ ...options, style: value })}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select a stylee" />
+              <SelectValue placeholder="Select a style" />
             </SelectTrigger>
             <SelectContent>
               {styles.map((style, index) => (
