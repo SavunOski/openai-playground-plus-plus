@@ -42,7 +42,7 @@ const Images = () => {
     if (prompt.startsWith("/setmodel") || prompt.startsWith("/m")) {
       const model = prompt.split(" ")[1];
       setOptions({ ...options, model: model });
-      setprompt('');
+      setPrompt('');
       return;
     };
     setErrorMessage('');
