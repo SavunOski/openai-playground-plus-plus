@@ -28,6 +28,7 @@ const url = 'https://api.openai.com/v1/responses';
 const models =
   [
   { name: 'o4-mini' },
+  { name: 'o3-pro' },
   { name: 'o3' },
   { name: 'o3-mini' },
   { name: 'o1-pro' },
