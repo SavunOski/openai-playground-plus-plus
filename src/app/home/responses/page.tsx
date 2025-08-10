@@ -186,7 +186,7 @@ const TextGeneration = () => {
                 </SelectContent>
               </Select>
             </div>
-            if (isEffort) {
+            {isEffort && 
               <div className="flex flex-col gap-3">
                 <Label>Reasoning Effort</Label>
                 <Select
@@ -209,7 +209,7 @@ const TextGeneration = () => {
               </Select>
             </div>}
 
-            if (!isEffort) {<div className="flex flex-col gap-2">
+            {!isEffort && <div className="flex flex-col gap-2">
               <div className="flex justify-between">
                 <Label>Temperature: {options.temperature}</Label>
               </div>
@@ -294,8 +294,7 @@ const TextGeneration = () => {
             </SelectContent>
           </Select>
         </div>
-        options.model 
-        <div className="flex flex-col gap-3">
+        {isEffort && <div className="flex flex-col gap-3">
           <Label>Reasoning Effort</Label>
           <Select
             name="reasoning"
@@ -313,8 +312,8 @@ const TextGeneration = () => {
               ))}
             </SelectContent>
           </Select>
-        </div>
-        <div className="flex flex-col gap-4">
+        </div>}
+        {!isEffort && <div className="flex flex-col gap-4">
           <div className="flex justify-between">
             <Label>Temperature</Label>
             <Text variant="medium">{options.temperature}</Text>
@@ -328,7 +327,7 @@ const TextGeneration = () => {
               setOptions({ ...options, temperature: value[0] })
             }
           />
-        </div>
+        </div>}
         <Link
           href="https://platform.openai.com/docs/guides/text-generation"
           target="_blank"
