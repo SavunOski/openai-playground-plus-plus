@@ -82,7 +82,7 @@ const TextGeneration = () => {
           model: options.model,
           temperature: options.temperature,
           truncation: options.model === 'computer-use-preview' ? "auto" : "disabled",
-          reasoning: "{effort: " + (options.model === 'gpt-5' || options.model === 'gpt-5-mini' || options.model === 'gpt-5-nano' ? null : options.reasoning) + "}",
+          reasoning: "testing",
         }),
       });
       if (!response.ok) {
