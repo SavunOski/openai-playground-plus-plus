@@ -131,7 +131,7 @@ const TextGeneration = () => {
           inputTokens: spendingDetails.inputTokens + completionResponse.usage.input_tokens,
           outputTokens: spendingDetails.outputTokens + completionResponse.usage.output_tokens,
         });
-        setSpendingText("Input tokens spent on this generation: " + completionResponse.usage.input_tokens + "\n Output tokens spent on this generation: " + completionResponse.usage.output_tokens + "\n Input tokens spent so far: " + spendingDetails.inputTokens + "\n Output tokens spent so far: " + spendingDetails.outputTokens);
+        setSpendingText("Input: " + completionResponse.usage.input_tokens + "\n Output: " + completionResponse.usage.output_tokens + "\n Input (total): " + spendingDetails.inputTokens + "\n Output (total): " + (spendingDetails.outputTokens + completionResponse.usage.output_tokens));
         setMessages((prevMessages) => {
           return [
             ...prevMessages,
@@ -353,7 +353,9 @@ const TextGeneration = () => {
           Learn more about text generation <ArrowUpRight size={16} />
         </Link>
         <Text>
-          {spendingText}
+          {`
+            ${spendingText}
+            `}
         </Text>
       </div>
     </div>
