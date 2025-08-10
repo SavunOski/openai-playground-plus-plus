@@ -27,6 +27,9 @@ import remarkGfm from 'remark-gfm';
 const url = 'https://api.openai.com/v1/responses';
 const models =
   [
+  { name: 'gpt-5' },
+  { name: 'gpt-5-mini' },
+  { name: 'gpt-5-nano' },
   { name: 'o4-mini' },
   { name: 'o3-pro' },
   { name: 'o3' },
@@ -40,6 +43,13 @@ const models =
   { name: 'gpt-4.1-nano' },
   { name: 'computer-use-preview' }];
 
+const efforts =
+  [
+  { name: 'minimal' },
+  { name: 'low' },
+  { name: 'medium' },
+  { name: 'high' },];
+
 const TextGeneration = () => {
   const [systemInstructions, setSystemInstructions] = useState<string>('');
   const [inputMessage, setInputMessage] = useState<string>('');
@@ -48,28 +58,36 @@ const TextGeneration = () => {
   const [options, setOptions] = useState<{
     model: string;
     temperature: number;
+    reasoning: string;
   }>({
     model: models[0].name,
     temperature: 1,
+    reasoning: "low",
   });
   const [errorMessage, setErrorMessage] = useState<string>('');
 
+  var isEffort = options.model === 'gpt-5' || options.model === 'gpt-5-mini' || options.model === 'gpt-5-nano' ? true : false;
   async function getResponse(
     messages: Array<ChatCompletionMessageParam>
   ): Promise<any> {
     try {
+      const requestPayload: any = {
+        input: messages,
+        model: options.model,
+        temperature: options.temperature,
+        truncation: options.model === 'computer-use-preview' ? "auto" : "disabled",
+      };
+      if (isEffort) {
+        requestPayload.reasoning = { effort: options.reasoning };
+      }
+
       const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: 'Bearer ' + openai.apiKey,
         },
-        body: JSON.stringify({
-          input: messages,
-          model: options.model,
-          temperature: options.temperature,
-          truncation: options.model === 'computer-use-preview' ? "auto" : "disabled",
-        }),
+        body: JSON.stringify(requestPayload),
       });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -172,7 +190,30 @@ const TextGeneration = () => {
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex flex-col gap-2">
+            {isEffort && 
+              <div className="flex flex-col gap-3">
+                <Label>Reasoning Effort</Label>
+                <Select
+                  name="reasoning"
+                  value={options.reasoning}
+                  onValueChange={(value) =>
+                  setOptions({ ...options, reasoning: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select reasoning effort" />
+                </SelectTrigger>
+                <SelectContent>
+                  {efforts.map((reason, index) => (
+                    <SelectItem key={index} value={reason.name}>
+                      {reason.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>}
+
+            {!isEffort && <div className="flex flex-col gap-2">
               <div className="flex justify-between">
                 <Label>Temperature: {options.temperature}</Label>
               </div>
@@ -185,7 +226,7 @@ const TextGeneration = () => {
                   setOptions({ ...options, temperature: value[0] })
                 }
               />
-            </div>
+            </div>}
           </div>
 
           {messages.length === 0 && (
@@ -257,7 +298,26 @@ const TextGeneration = () => {
             </SelectContent>
           </Select>
         </div>
-        <div className="flex flex-col gap-4">
+        {isEffort && <div className="flex flex-col gap-3">
+          <Label>Reasoning Effort</Label>
+          <Select
+            name="reasoning"
+            value={options.reasoning}
+            onValueChange={(value) => setOptions({ ...options, reasoning: value })}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select reasoning effort" />
+            </SelectTrigger>
+            <SelectContent>
+              {efforts.map((reason, index) => (
+                <SelectItem key={index} value={reason.name}>
+                  {reason.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>}
+        {!isEffort && <div className="flex flex-col gap-4">
           <div className="flex justify-between">
             <Label>Temperature</Label>
             <Text variant="medium">{options.temperature}</Text>
@@ -271,7 +331,7 @@ const TextGeneration = () => {
               setOptions({ ...options, temperature: value[0] })
             }
           />
-        </div>
+        </div>}
         <Link
           href="https://platform.openai.com/docs/guides/text-generation"
           target="_blank"
