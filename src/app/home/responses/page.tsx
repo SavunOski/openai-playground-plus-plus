@@ -27,32 +27,40 @@ import remarkGfm from 'remark-gfm';
 const url = 'https://api.openai.com/v1/responses';
 const models =
   [
-  { name: 'gpt-5' },
-  { name: 'gpt-5-mini' },
-  { name: 'gpt-5-nano' },
-  { name: 'o4-mini' },
-  { name: 'o3-pro' },
-  { name: 'o3' },
-  { name: 'o3-mini' },
-  { name: 'o1-pro' },
-  { name: 'o1' },
-  { name: 'o1-mini' },
-  { name: 'chatgpt-4o-latest' },
-  { name: 'gpt-4.1' },
-  { name: 'gpt-4.1-mini' },
-  { name: 'gpt-4.1-nano' },
-  { name: 'computer-use-preview' }];
+    { name: 'gpt-5' },
+    { name: 'gpt-5-mini' },
+    { name: 'gpt-5-nano' },
+    { name: 'o4-mini' },
+    { name: 'o3-pro' },
+    { name: 'o3' },
+    { name: 'o3-mini' },
+    { name: 'o1-pro' },
+    { name: 'o1' },
+    { name: 'o1-mini' },
+    { name: 'chatgpt-4o-latest' },
+    { name: 'gpt-4.1' },
+    { name: 'gpt-4.1-mini' },
+    { name: 'gpt-4.1-nano' },
+    { name: 'computer-use-preview' }];
 
 const efforts =
   [
-  { name: 'minimal' },
-  { name: 'low' },
-  { name: 'medium' },
-  { name: 'high' },];
+    { name: 'minimal' },
+    { name: 'low' },
+    { name: 'medium' },
+    { name: 'high' },];
 
 const TextGeneration = () => {
   const [systemInstructions, setSystemInstructions] = useState<string>('');
   const [inputMessage, setInputMessage] = useState<string>('');
+  const [spendingText, setSpendingText] = useState("Your spending will be shown here.");
+  const [spendingDetails, setSpendingDetails] = useState<{
+    inputTokens: number;
+    outputTokens: number;
+  }>({
+    inputTokens: 0,
+    outputTokens: 0,
+  });
   const [messages, setMessages] = useState<ChatCompletionMessageParam[]>([]);
   const [pendingCompletion, setPendingCompletion] = useState<boolean>(false);
   const [options, setOptions] = useState<{
@@ -71,19 +79,23 @@ const TextGeneration = () => {
     messages: Array<ChatCompletionMessageParam>
   ): Promise<any> {
     try {
+      const requestPayload: any = {
+        input: messages,
+        model: options.model,
+        temperature: options.temperature,
+        truncation: options.model === 'computer-use-preview' ? "auto" : "disabled",
+      };
+      if (isEffort) {
+        requestPayload.reasoning = { effort: options.reasoning };
+      }
+
       const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: 'Bearer ' + openai.apiKey,
         },
-        body: JSON.stringify({
-          input: messages,
-          model: options.model,
-          temperature: options.temperature,
-          truncation: options.model === 'computer-use-preview' ? "auto" : "disabled",
-          reasoning: "testing",
-        }),
+        body: JSON.stringify(requestPayload),
       });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -98,11 +110,11 @@ const TextGeneration = () => {
   }
 
   const handleSend = () => {
-    if (inputMessage.startsWith("/setmodel") || inputMessage.startsWith("/m")){
-      const model = inputMessage.split(" ")[1];      
-        setOptions({ ...options, model: model });
-        setInputMessage('');
-        return;     
+    if (inputMessage.startsWith("/setmodel") || inputMessage.startsWith("/m")) {
+      const model = inputMessage.split(" ")[1];
+      setOptions({ ...options, model: model });
+      setInputMessage('');
+      return;
     };
     setPendingCompletion(true);
     const newMessages = [...messages];
@@ -115,6 +127,11 @@ const TextGeneration = () => {
 
     getResponse(newMessages)
       .then((completionResponse) => {
+        setSpendingDetails({
+          inputTokens: spendingDetails.inputTokens + completionResponse.usage.input_tokens,
+          outputTokens: spendingDetails.outputTokens + completionResponse.usage.output_tokens,
+        });
+        setSpendingText("Input tokens spent on this generation: " + completionResponse.usage.input_tokens + "\n Output tokens spent on this generation: " + completionResponse.usage.output_tokens + "\n Input tokens spent so far: " + spendingDetails.inputTokens + "\n Output tokens spent so far: " + spendingDetails.outputTokens);
         setMessages((prevMessages) => {
           return [
             ...prevMessages,
@@ -129,6 +146,7 @@ const TextGeneration = () => {
         setErrorMessage(err.message);
       })
       .finally(() => {
+
         setPendingCompletion(false);
       });
   };
@@ -186,28 +204,28 @@ const TextGeneration = () => {
                 </SelectContent>
               </Select>
             </div>
-            {isEffort && 
+            {isEffort &&
               <div className="flex flex-col gap-3">
                 <Label>Reasoning Effort</Label>
                 <Select
                   name="reasoning"
                   value={options.reasoning}
                   onValueChange={(value) =>
-                  setOptions({ ...options, reasoning: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select reasoning effort" />
-                </SelectTrigger>
-                <SelectContent>
-                  {efforts.map((reason, index) => (
-                    <SelectItem key={index} value={reason.name}>
-                      {reason.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>}
+                    setOptions({ ...options, reasoning: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select reasoning effort" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {efforts.map((reason, index) => (
+                      <SelectItem key={index} value={reason.name}>
+                        {reason.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>}
 
             {!isEffort && <div className="flex flex-col gap-2">
               <div className="flex justify-between">
@@ -334,6 +352,9 @@ const TextGeneration = () => {
         >
           Learn more about text generation <ArrowUpRight size={16} />
         </Link>
+        <Text>
+          {spendingText}
+        </Text>
       </div>
     </div>
   );
