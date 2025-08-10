@@ -71,23 +71,19 @@ const TextGeneration = () => {
     messages: Array<ChatCompletionMessageParam>
   ): Promise<any> {
     try {
-      const requestPayload: any = {
-        input: messages,
-        model: options.model,
-        temperature: options.temperature,
-        truncation: options.model === 'computer-use-preview' ? "auto" : "disabled",
-      };
-      if (isEffort) {
-        requestPayload.reasoning = { effort: options.reasoning };
-      }
-
       const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: 'Bearer ' + openai.apiKey,
         },
-        body: JSON.stringify(requestPayload),
+        body: JSON.stringify({
+          input: messages,
+          model: options.model,
+          temperature: options.temperature,
+          truncation: options.model === 'computer-use-preview' ? "auto" : "disabled",
+          reasoning: "{effort: " + (options.model === 'gpt-5' || options.model === 'gpt-5-mini' || options.model === 'gpt-5-nano' ? null : options.reasoning) + "}",
+        }),
       });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
