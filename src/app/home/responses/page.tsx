@@ -27,6 +27,9 @@ import remarkGfm from 'remark-gfm';
 const url = 'https://api.openai.com/v1/responses';
 const models =
   [
+  { name: 'gpt-5' },
+  { name: 'gpt-5-mini' },
+  { name: 'gpt-5-nano' },
   { name: 'o4-mini' },
   { name: 'o3-pro' },
   { name: 'o3' },
@@ -40,6 +43,13 @@ const models =
   { name: 'gpt-4.1-nano' },
   { name: 'computer-use-preview' }];
 
+const efforts =
+  [
+  { name: 'minimal' },
+  { name: 'low' },
+  { name: 'medium' },
+  { name: 'high' },];
+
 const TextGeneration = () => {
   const [systemInstructions, setSystemInstructions] = useState<string>('');
   const [inputMessage, setInputMessage] = useState<string>('');
@@ -48,12 +58,15 @@ const TextGeneration = () => {
   const [options, setOptions] = useState<{
     model: string;
     temperature: number;
+    reasoning: string;
   }>({
     model: models[0].name,
     temperature: 1,
+    reasoning: "low",
   });
   const [errorMessage, setErrorMessage] = useState<string>('');
 
+  var isEffort = options.model === 'gpt-5' || options.model === 'gpt-5-mini' || options.model === 'gpt-5-nano' ? true : false;
   async function getResponse(
     messages: Array<ChatCompletionMessageParam>
   ): Promise<any> {
@@ -69,6 +82,7 @@ const TextGeneration = () => {
           model: options.model,
           temperature: options.temperature,
           truncation: options.model === 'computer-use-preview' ? "auto" : "disabled",
+          reasoning: options.model === 'gpt-5' || options.model === 'gpt-5-mini' || options.model === 'gpt-5-nano' ? "" : options.reasoning,
         }),
       });
       if (!response.ok) {
@@ -172,7 +186,30 @@ const TextGeneration = () => {
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex flex-col gap-2">
+            if (isEffort) {
+              <div className="flex flex-col gap-3">
+                <Label>Reasoning Effort</Label>
+                <Select
+                  name="reasoning"
+                  value={options.reasoning}
+                  onValueChange={(value) =>
+                  setOptions({ ...options, reasoning: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select reasoning effort" />
+                </SelectTrigger>
+                <SelectContent>
+                  {efforts.map((reason, index) => (
+                    <SelectItem key={index} value={reason.name}>
+                      {reason.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>}
+
+            if (!isEffort) {<div className="flex flex-col gap-2">
               <div className="flex justify-between">
                 <Label>Temperature: {options.temperature}</Label>
               </div>
@@ -185,7 +222,7 @@ const TextGeneration = () => {
                   setOptions({ ...options, temperature: value[0] })
                 }
               />
-            </div>
+            </div>}
           </div>
 
           {messages.length === 0 && (
@@ -252,6 +289,26 @@ const TextGeneration = () => {
               {models.map((model, index) => (
                 <SelectItem key={index} value={model.name}>
                   {model.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        options.model 
+        <div className="flex flex-col gap-3">
+          <Label>Reasoning Effort</Label>
+          <Select
+            name="reasoning"
+            value={options.reasoning}
+            onValueChange={(value) => setOptions({ ...options, reasoning: value })}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select reasoning effort" />
+            </SelectTrigger>
+            <SelectContent>
+              {efforts.map((reason, index) => (
+                <SelectItem key={index} value={reason.name}>
+                  {reason.name}
                 </SelectItem>
               ))}
             </SelectContent>
