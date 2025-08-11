@@ -67,10 +67,12 @@ const TextGeneration = () => {
     model: string;
     temperature: number;
     reasoning: string;
+    webSearch?: boolean;
   }>({
     model: models[0].name,
     temperature: 1,
     reasoning: "low",
+    webSearch: false,
   });
   const [errorMessage, setErrorMessage] = useState<string>('');
 
@@ -131,7 +133,7 @@ const TextGeneration = () => {
           inputTokens: spendingDetails.inputTokens + completionResponse.usage.input_tokens,
           outputTokens: spendingDetails.outputTokens + completionResponse.usage.output_tokens,
         });
-        setSpendingText("Input: " + completionResponse.usage.input_tokens + "\n Output: " + completionResponse.usage.output_tokens + "\n Input (total): " + spendingDetails.inputTokens + "\n Output (total): " + (spendingDetails.outputTokens + completionResponse.usage.output_tokens));
+        setSpendingText("Input: " + completionResponse.usage.input_tokens + "\n Output: " + completionResponse.usage.output_tokens + "\n Input (total): " + (spendingDetails.inputTokens + completionResponse.usage.input_tokens) + "\n Output (total): " + (spendingDetails.outputTokens + completionResponse.usage.output_tokens));
         setMessages((prevMessages) => {
           return [
             ...prevMessages,
@@ -331,6 +333,9 @@ const TextGeneration = () => {
             </SelectContent>
           </Select>
         </div>}
+    <div>
+      <input type="checkbox" checked={options.webSearch} onChange={(e) => setOptions({ ...options, webSearch: e.target.checked })} />
+    </div>
         {!isEffort && <div className="flex flex-col gap-4">
           <div className="flex justify-between">
             <Label>Temperature</Label>
